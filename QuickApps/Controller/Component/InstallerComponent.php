@@ -499,18 +499,22 @@ class InstallerComponent extends Component {
 					$moduleData['ordering'] = $max_order;
 				}
 
+				if ($this->options['type'] == 'module') {
+					CakePlugin::load($appName);
+				} elseif ($this->options['type'] == 'theme') {
+					App::build(array('plugins' => array(THEMES . $appName . DS . 'app' . DS)));
+				}
+
 				$this->Controller->Module->save($moduleData); // register module
 
 				// Build ACOS && Register module in core
 				switch ($this->options['type']) {
 					case 'module':
-						CakePlugin::load($appName);
 						$this->buildAcos($appName);
 					break;
 
 					case 'theme':
 						$this->buildAcos('Theme' . $appName);
-						App::build(array('plugins' => array(THEMES . $appName . DS . 'app' . DS)));
 					break;
 				}
 
@@ -935,7 +939,7 @@ class InstallerComponent extends Component {
  *	Or an array list of all modules that uses $module when $returnList is set to true, an empty array is
  *	returned if there are no module that uses $module.
  */
-	function checkReverseDependency($module, $returnList = true) {
+	public function checkReverseDependency($module, $returnList = true) {
 		$list = array();
 		$module = Inflector::camelize($module);
 
